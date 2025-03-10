@@ -6,7 +6,7 @@ This Docker-based solution automatically updates your No-IP domain with your cur
 
 1. Clone this repository:
    ```
-   git clone <repository_url>
+   git clone https://github.com/cassioik/noip-updater.git
    cd noip-updater
    ```
 
