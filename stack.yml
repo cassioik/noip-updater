@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  noip-updater:
+    image: noip-updater:latest
+    build: .
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker  # Adjust as needed
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    environment:
+      - UPDATE_INTERVAL=300
+    volumes:
+      - noip_logs:/var/log
+      - noip_data:/app/data
+    networks:
+      - noip_ipv6_network
+    secrets:
+      - noip_username
+      - noip_password
+      - noip_hostname
+
+networks:
+  noip_ipv6_network:
+    driver: overlay
+    ipam:
+      driver: default
+      config:
+        - subnet: "2001:db8:1::/64"
+          gateway: "2001:db8:1::1"
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+
+volumes:
+  noip_logs:
+    driver: local
+  noip_data:
+    driver: local
+
+secrets:
+  noip_username:
+    external: true
+  noip_password:
+    external: true
+  noip_hostname:
+    external: true
